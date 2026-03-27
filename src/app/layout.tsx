@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   title: "Digital Heroes Golf | Performance, Prizes & Charity",
   description: "A subscription-based golf platform combining performance tracking, monthly prize draws, and charitable giving. Join the next generation of golf rewards.",
   keywords: ["golf", "charity", "subscription", "stableford", "prize draw", "rewards"],
+  icons: {
+    icon: "/vimage.png",
+    shortcut: "/vimage.png",
+    apple: "/vimage.png",
+  },
   openGraph: {
     title: "Digital Heroes Golf",
     description: "Combine your golf game with a positive social impact.",
