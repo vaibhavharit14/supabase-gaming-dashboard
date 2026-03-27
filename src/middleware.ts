@@ -12,23 +12,31 @@ export async function middleware(request: NextRequest) {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!url || !key) {
-    return response // Skip auth if variables are missing during initial build
+    return response
   }
 
   const supabase = createServerClient(url, key, {
     cookies: {
-      getAll() { return request.cookies.getAll() },
+      getAll() {
+        return request.cookies.getAll()
+      },
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-        // ... handled internally by ssr
+        cookiesToSet.forEach(({ name, value, options }) => request.cookies.set({ name, value, ...options }))
+        response = NextResponse.next({
+          request: {
+            headers: request.headers,
+          },
+        })
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set({ name, value, ...options })
+        )
       },
     },
   })
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Protect Admin Route: Only allow access if user is logged in AND has the admin email
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@gaming-charity.com'
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@hero.com'
 
   if (request.nextUrl.pathname.startsWith('/admin')) {
     if (!user || user.email !== adminEmail) {
@@ -36,13 +44,13 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Protect Dashboard Route: Only allow if user is logged in
   if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
   return response
 }
+
 
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],

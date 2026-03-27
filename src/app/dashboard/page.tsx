@@ -33,17 +33,25 @@ export default function UserDashboard() {
     }
 
     // Fetch Profile
-    const { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+    const { data: prof, error: profError } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+    if (profError) {
+      console.error("Profile fetch error:", profError)
+      toast.error("Failed to load profile data")
+    }
     setProfile(prof)
 
     // Fetch Scores (Top 5)
-    const { data: scoreData } = await supabase
+    const { data: scoreData, error: scoreError } = await supabase
       .from('scores')
       .select('*')
       .eq('user_id', user.id)
       .order('date', { ascending: false })
       .limit(5)
     
+    if (scoreError) {
+      console.error("Scores fetch error:", scoreError)
+      toast.error("Failed to load scores data")
+    }
     setScores(scoreData || [])
     setLoading(false)
   }
