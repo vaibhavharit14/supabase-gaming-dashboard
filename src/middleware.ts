@@ -27,7 +27,17 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user && (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/admin'))) {
+  // Protect Admin Route: Only allow access if user is logged in AND has the admin email
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@gaming-charity.com'
+
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (!user || user.email !== adminEmail) {
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+  }
+
+  // Protect Dashboard Route: Only allow if user is logged in
+  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 

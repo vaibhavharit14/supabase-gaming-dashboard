@@ -116,25 +116,47 @@ export default function LoginPage() {
 
 
            {!isSignUp && (
-             <button 
-               type="button"
-               onClick={async () => {
-                 setLoading(true)
-                 const { error } = await supabase.auth.signInWithPassword({ 
-                   email: 'demo@hero.com', 
-                   password: 'Password123!' 
-                 })
-                 if (error) toast.error("Demo account not found. Please Sign Up once as demo@hero.com first!")
-                 else {
-                   toast.success('Demo Access Granted')
-                   router.push('/dashboard')
-                 }
-                 setLoading(false)
-               }}
-               className="w-full py-4 rounded-xl border border-[var(--accent-gold)]/30 bg-[var(--accent-gold)]/5 text-[var(--accent-gold)] text-xs font-black uppercase tracking-widest hover:bg-[var(--accent-gold)]/10 transition-all flex items-center justify-center gap-2 mt-4"
-             >
-                <Zap className="w-4 h-4" /> Quick Demo Access
-             </button>
+             <div className="flex flex-col gap-3 mt-4">
+              <button 
+                type="button"
+                onClick={async () => {
+                  setLoading(true)
+                  const { error } = await supabase.auth.signInWithPassword({ 
+                    email: 'Game@hero.com', 
+                    password: 'game123' 
+                  })
+                   if (error) toast.error(error.message)
+                   else {
+                     toast.success('Demo Access Granted')
+                     router.push('/dashboard')
+                   }
+                  setLoading(false)
+                }}
+                className="w-full py-4 rounded-xl border border-[var(--accent-gold)]/30 bg-[var(--accent-gold)]/5 text-[var(--accent-gold)] text-[10px] font-black uppercase tracking-widest hover:bg-[var(--accent-gold)]/10 transition-all flex items-center justify-center gap-2"
+              >
+                 <Zap className="w-4 h-4" /> Quick Player Demo
+              </button>
+              
+              <button 
+                type="button"
+                onClick={async () => {
+                  setLoading(true)
+                  const { error } = await supabase.auth.signInWithPassword({ 
+                    email: 'admin@hero.com', 
+                    password: 'Admin123!' 
+                  })
+                   if (error) toast.error(error.message)
+                   else {
+                     toast.success('Admin Protocol Activated')
+                     router.push('/admin')
+                   }
+                  setLoading(false)
+                }}
+                className="w-full py-4 rounded-xl border border-[var(--accent-teal)]/30 bg-[var(--accent-teal)]/5 text-[var(--accent-teal)] text-[10px] font-black uppercase tracking-widest hover:bg-[var(--accent-teal)]/10 transition-all flex items-center justify-center gap-2"
+              >
+                 <Trophy className="w-4 h-4" /> Activate Admin Portal
+              </button>
+             </div>
            )}
 
            <div className="flex items-center gap-4 py-2">

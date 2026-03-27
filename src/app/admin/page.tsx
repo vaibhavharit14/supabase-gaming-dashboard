@@ -138,6 +138,15 @@ export default function AdminDashboard() {
            <div className="flex items-center gap-2 text-xs font-bold text-[var(--accent-teal)]">
               <div className="w-2 h-2 rounded-full bg-[var(--accent-teal)] animate-pulse" /> ENGINE ONLINE
            </div>
+           <button 
+             onClick={async () => {
+               await supabase.auth.signOut()
+               window.location.href = '/login'
+             }}
+             className="mt-4 w-full py-3 rounded-xl border border-white/10 text-white/40 hover:text-white hover:bg-white/5 transition-all text-[10px] font-black uppercase tracking-widest"
+           >
+              Shutdown Session
+           </button>
         </div>
       </aside>
 

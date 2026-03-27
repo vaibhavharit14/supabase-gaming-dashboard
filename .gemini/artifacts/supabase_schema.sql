@@ -1,14 +1,35 @@
 -- 1. PROFILES: Extending Auth.users
 CREATE TABLE profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
+  email TEXT,
   display_name TEXT,
   subscription_status TEXT DEFAULT 'inactive' CHECK (subscription_status IN ('active', 'inactive', 'lapsed')),
   plan TEXT CHECK (plan IN ('monthly', 'yearly')),
-  charity_id UUID, -- References charities table
+  charity_id UUID,
   charity_percentage NUMERIC DEFAULT 10 CHECK (charity_percentage >= 10 AND charity_percentage <= 100),
   total_winnings NUMERIC DEFAULT 0,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
+
+-- Trigger to create profile on signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email, display_name, subscription_status, plan)
+  VALUES (
+    new.id, 
+    new.email, 
+    split_part(new.email, '@', 1), 
+    'active', 
+    'monthly'
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
 -- 2. CHARITIES: Directory of causes
 CREATE TABLE charities (
